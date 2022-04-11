@@ -26,7 +26,7 @@ class ImageSRModel(torch.nn.Module):
 
             net_out = torch.rot90(net_in,-i,[2,3])
             rot_ens.append(net_out)
-            print("ROTATION: " + str(i*90))
+            #print("ROTATION: " + str(i*90))
         final_pred = rot_ens[0] + rot_ens[1] + rot_ens[2] + rot_ens[3]
         final_pred = 0.25 * final_pred
         return final_pred

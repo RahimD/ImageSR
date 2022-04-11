@@ -46,7 +46,21 @@ class ImageDataset(torch.utils.data.Dataset):
         train_g_tsr, tar_g_tsr = self.crop_image(train_g_tsr,tar_g_tsr)
         train_b_tsr, tar_b_tsr = self.crop_image(train_b_tsr,tar_b_tsr)
 
-        print("Loaded: " + self._train_names[idx] ,self._target_names[idx] + " Sizes: " + str(train_r_tsr.shape), str(tar_r_tsr.shape))
+        #When doing the convolutions, you lose 1 pixel on both H and W, so when you upscale via PixelShuffle, you lose 4 on each spatial dimension
+        #Thus, I cut 4 rows and 4 columns from target image. I suppose I could've used "crop()" instead
+        desiredRows = torch.tensor(range((self._cropped_h*self._factor)-self._factor))
+        desiredCols = torch.tensor(range((self._cropped_w*self._factor)-self._factor))
+        
+        tar_r_tsr = torch.index_select(tar_r_tsr,1,desiredRows)
+        tar_r_tsr = torch.index_select(tar_r_tsr,2,desiredCols)
+        
+        tar_g_tsr = torch.index_select(tar_g_tsr,1,desiredRows)
+        tar_g_tsr = torch.index_select(tar_g_tsr,2,desiredCols)
+
+        tar_b_tsr = torch.index_select(tar_b_tsr,1,desiredRows)
+        tar_b_tsr = torch.index_select(tar_b_tsr,2,desiredCols)
+
+        #print("Loaded: " + self._train_names[idx] ,self._target_names[idx] + " Sizes: " + str(train_r_tsr.shape), str(tar_r_tsr.shape))
 
         return self._train_names[idx], train_r_tsr, tar_r_tsr, train_g_tsr, tar_g_tsr, train_b_tsr, tar_b_tsr
         
