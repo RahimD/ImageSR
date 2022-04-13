@@ -3,12 +3,12 @@ import torch.nn
 class ImageSRModel(torch.nn.Module):
     def __init__(self, FACTOR):
         super().__init__()
-        self._L1 =  torch.nn.Conv2d(1,64, kernel_size=(2,2))               #L1
-        self._L2 =  torch.nn.Conv2d(64,64, kernel_size=(1,1))              #L2
-        self._L3 =  torch.nn.Conv2d(64,64, kernel_size=(1,1))              #L3
-        self._L4 =  torch.nn.Conv2d(64,64, kernel_size=(1,1))              #L4
-        self._L5 =  torch.nn.Conv2d(64,64, kernel_size=(1,1))              #L5
-        self._L6 =  torch.nn.Conv2d(64,FACTOR*FACTOR, kernel_size=(1,1))   #L6
+        self._L1 =  torch.nn.Conv2d(1,64, kernel_size=(2,2), dtype=torch.float32)               #L1
+        self._L2 =  torch.nn.Conv2d(64,64, kernel_size=(1,1), dtype=torch.float32)              #L2
+        self._L3 =  torch.nn.Conv2d(64,64, kernel_size=(1,1), dtype=torch.float32)              #L3
+        self._L4 =  torch.nn.Conv2d(64,64, kernel_size=(1,1), dtype=torch.float32)              #L4
+        self._L5 =  torch.nn.Conv2d(64,64, kernel_size=(1,1), dtype=torch.float32)              #L5
+        self._L6 =  torch.nn.Conv2d(64,FACTOR*FACTOR, kernel_size=(1,1), dtype=torch.float32)   #L6
         self._DTS =  torch.nn.PixelShuffle(FACTOR)                         #Depth-To-Space
 
     def forward(self, input_batch):
