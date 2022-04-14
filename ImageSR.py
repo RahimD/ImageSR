@@ -13,8 +13,8 @@ valid_lr_dir = sys.argv[3]
 valid_hr_dir = sys.argv[4]
 train_dataset = os.listdir(train_dir)
 target_dataset = os.listdir(target_dir)
-valid_lr_dataset = os.listdir(valid_lr)
-valid_hr_dataset = os.listdir(valid_hr)
+valid_lr_dataset = os.listdir(valid_lr_dir)
+valid_hr_dataset = os.listdir(valid_hr_dir)
 
 lr_h = 510 
 lr_w = 279
@@ -74,7 +74,6 @@ for channel in range(3):
         
         print("EPOCH: " + str(epoch) + " Validation Loss (R,G,B): " + str(float(valid)))
         print(c[channel] + " Batch Losses: " + str(batch_losses))
-    w_file = str("model_" + c[channel] + "weights.pth")
-    m_file = str("model_" + c[channel] + ".pth")
-    torch.save(model.state_dict(), w_file)
-    torch.save(model, m_file)
+    model_export = torch.jit.script(model)
+    m_file = str("model_" + c[channel] + ".pt")
+    model_export.save(m_file)
