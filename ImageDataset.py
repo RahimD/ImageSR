@@ -4,7 +4,7 @@ import torch.utils.data
 import torchvision.transforms.functional
 
 class ImageDataset(torch.utils.data.Dataset):
-    def __init__(self, train_image_names, train_dir, target_dir, crop_h, crop_w, channel, factor):
+    def __init__(self, train_image_names, train_dir, target_dir, crop_h, crop_w, channel, factor, device):
         self._train_names = train_image_names
         self._target_names = []
         self._train_dir = train_dir
@@ -13,6 +13,7 @@ class ImageDataset(torch.utils.data.Dataset):
         self._cropped_w = crop_w
         self._factor = factor
         self._channel = channel
+        self._dev = device
         for name in self._train_names:
             self._target_names.append(name.split("x")[0]+".png")
 
@@ -25,8 +26,8 @@ class ImageDataset(torch.utils.data.Dataset):
         torchvision.transforms.functional.crop(image_hr,0,0,self._cropped_h*self._factor,self._cropped_w*self._factor)
     
     def __getitem__(self, idx):
-        train_img = PIL.Image.open(self._train_dir + "./" + self._train_names[idx])
-        tar_img = PIL.Image.open(self._target_dir + "./" + self._target_names[idx])
+        train_img = PIL.Image.open(self._train_dir + "/" + self._train_names[idx])
+        tar_img = PIL.Image.open(self._target_dir + "/" + self._target_names[idx])
         
         train_size = (train_img.size[1], train_img.size[0])
         tar_size = (tar_img.size[1], tar_img.size[0])
@@ -48,12 +49,10 @@ class ImageDataset(torch.utils.data.Dataset):
         tar_tsr = torch.index_select(tar_tsr,1,desiredRows)
         tar_tsr = torch.index_select(tar_tsr,2,desiredCols)
         
-        print("Loaded: " + self._train_names[idx] ,self._target_names[idx] + " Sizes: " + str(train_tsr.shape), str(tar_tsr.shape))
+        #print("Loaded: " + self._train_names[idx] ,self._target_names[idx] + " Sizes: " + str(train_tsr.shape), str(tar_tsr.shape))
 
-        return \
-        train_tsr,\
-        tar_tsr
-        #train_tsr.to('cuda')\
-        #tar_tsr.to('cuda')
+        return\
+        train_tsr.to(self._dev),\
+        tar_tsr.to(self._dev)
         
         
